@@ -1,0 +1,21 @@
+{
+  "name": "rajbrijesh-stocksense",
+  "owner": {
+    "name": "rajbrijesh"
+  },
+  "metadata": {
+    "description": "StockSense - fundamentals-only analysis of Indian (NSE/BSE) listed stocks",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "stocksense",
+      "description": "Fundamentals-only analysis of Indian (NSE/BSE) listed stocks for long-term investors, using live Screener.in, Tickertape and Moneycontrol data with sourced figures and no buy/sell/hold calls.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/stocksense"
+      ]
+    }
+  ]
+}

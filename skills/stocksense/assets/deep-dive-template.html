@@ -1,0 +1,411 @@
+<style>
+.ss{--fg:#1b1f24;--muted:#5d6670;--line:#dfe3e8;--card:#f6f7f9;--accent:#0b6e58;
+--good:#17663f;--good-bg:#e3f3ea;--neutral:#3f4a57;--neutral-bg:#eceff3;
+--watch:#8a5a00;--watch-bg:#fbefd6;--risk:#a8241b;--risk-bg:#fbe4e1;--self:#eef7f4;
+color:var(--fg);font:14px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Noto Sans Devanagari",sans-serif;max-width:920px;margin:0 auto}
+@media (prefers-color-scheme:dark){.ss{--fg:#e7eaee;--muted:#a3acb7;--line:#343b44;--card:#1d2228;--accent:#4fc3a1;
+--good:#7fd8a6;--good-bg:#173527;--neutral:#c4ccd6;--neutral-bg:#2a3038;--watch:#f0c36b;--watch-bg:#3a2e14;--risk:#f3978d;--risk-bg:#3d1d1a;--self:#16302a}}
+.ss *{box-sizing:border-box}
+.ss h2{font-size:22px;margin:2px 0 4px;line-height:1.25}
+.ss h3{font-size:15px;margin:18px 0 8px}
+.ss p{margin:0 0 10px}
+.ss ul{margin:0 0 10px;padding-left:20px}
+.ss li{margin:3px 0}
+.ss-head{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:flex-start;padding:4px 0 14px;border-bottom:1px solid var(--line)}
+.ss-tick{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.ss-what{color:var(--muted);max-width:560px}
+.ss-head>div:first-child{flex:1 1 360px}
+.ss-verdict{flex:0 1 280px;min-width:200px}
+.ss-verdict .lbl{font-size:12px;color:var(--muted);margin-bottom:4px}
+.ss-conf{font-size:12px;color:var(--muted);margin-top:6px}
+.ss-tabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line);margin:12px 0 4px;scrollbar-width:thin}
+.ss-tabs button{flex:0 0 auto;border:0;background:none;color:var(--muted);font:inherit;font-weight:600;padding:9px 12px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.ss-tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.ss-tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.ss-panel{padding:10px 0 4px}
+.ss-panel>h3:first-child{margin-top:6px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:6px 0 8px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.kpi .k{font-size:12px;color:var(--muted)}
+.kpi .v{font-size:18px;font-weight:650;margin:2px 0}
+.kpi .s{font-size:11px;color:var(--muted)}
+.tbl{overflow-x:auto;margin:4px 0 10px}
+.ss table{border-collapse:collapse;width:100%;font-size:13.5px}
+.ss th,.ss td{padding:7px 10px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+.ss th:first-child,.ss td:first-child{text-align:left;white-space:normal}
+.ss th{font-weight:650;border-bottom:2px solid var(--line);background:none}
+.ss tr.self td{background:var(--self);font-weight:600}
+.sig{display:inline-block;font-size:12px;font-weight:650;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.sig.big{font-size:15px;padding:4px 14px}
+.sig.good{color:var(--good);background:var(--good-bg)}
+.sig.neutral{color:var(--neutral);background:var(--neutral-bg)}
+.sig.watch{color:var(--watch);background:var(--watch-bg)}
+.sig.risk{color:var(--risk);background:var(--risk-bg)}
+.na{color:var(--risk);font-size:12.5px;white-space:normal}
+.src{font-size:12px;color:var(--muted);margin:-4px 0 10px}
+.read{border-left:3px solid var(--accent);padding:6px 12px;background:var(--card);border-radius:0 8px 8px 0;margin:10px 0}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.box{border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.box h3{margin-top:2px}
+.bars{margin:6px 0 10px}
+.bar-row{display:grid;grid-template-columns:72px 1fr 120px;gap:10px;align-items:center;margin:5px 0;font-size:13px}
+.bar-row .bt{height:10px;background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.bar-row .bf{display:block;height:100%;background:var(--accent)}
+.bar-row .bf.neg{background:var(--risk)}
+.bar-row .bv{text-align:right}
+.up{color:var(--good);font-style:normal}
+.down{color:var(--risk);font-style:normal}
+.illus{font-size:12px;font-weight:650;color:var(--watch)}
+.ss table.wrap th,.ss table.wrap td{text-align:left}
+.ss table.wrap td{white-space:normal;min-width:96px}
+.box.bull{border-top:3px solid var(--good)}
+.box.bear{border-top:3px solid var(--risk)}
+.side{display:inline-block;white-space:nowrap;font-size:12px;font-weight:650;padding:2px 9px;border-radius:6px;border:1px solid currentColor}
+.side.bull{color:var(--good)}
+.side.bear{color:var(--risk)}
+.side.open{color:var(--neutral)}
+.lenses .box p{margin:0 0 6px;font-size:13.5px}
+.disc{font-size:12px;color:var(--muted);border-top:1px solid var(--line);margin-top:16px;padding-top:10px;font-style:italic}
+@media (max-width:520px){.bar-row{grid-template-columns:60px 1fr 96px}.ss h2{font-size:19px}}
+</style>
+
+<div class="ss" id="ss-root">
+
+<header class="ss-head">
+  <div>
+    <div class="ss-tick">[TICKER] · [EXCHANGE] · [SECTOR]</div>
+    <h2>[COMPANY_NAME]</h2>
+    <p class="ss-what">[ONE_LINE_BUSINESS]</p>
+  </div>
+  <div class="ss-verdict">
+    <div class="lbl">Fundamental quality</div>
+    <span class="sig big [QUALITY_CLASS]">[QUALITY]</span>
+    <!-- e.g. "High · Consolidated figures · Latest results: Q2 FY27" -->
+    <div class="ss-conf">Data confidence: <b>[DATA_CONFIDENCE]</b> · [BASIS] figures · Latest results: [LATEST_QUARTER]</div>
+  </div>
+</header>
+
+<nav class="ss-tabs" role="tablist" aria-label="Report sections">
+  <button role="tab" id="ss-t1" aria-controls="ss-p1" aria-selected="true">Snapshot</button>
+  <button role="tab" id="ss-t2" aria-controls="ss-p2" aria-selected="false">Valuation</button>
+  <button role="tab" id="ss-t3" aria-controls="ss-p3" aria-selected="false">Growth</button>
+  <button role="tab" id="ss-t4" aria-controls="ss-p4" aria-selected="false">Health</button>
+  <button role="tab" id="ss-t5" aria-controls="ss-p5" aria-selected="false">Returns</button>
+  <button role="tab" id="ss-t6" aria-controls="ss-p6" aria-selected="false">Peers</button>
+  <button role="tab" id="ss-t7" aria-controls="ss-p7" aria-selected="false">Ownership</button>
+  <button role="tab" id="ss-t8" aria-controls="ss-p8" aria-selected="false">News &amp; Mood</button>
+  <button role="tab" id="ss-t9" aria-controls="ss-p9" aria-selected="false">Bull vs Bear</button>
+  <button role="tab" id="ss-t10" aria-controls="ss-p10" aria-selected="false">View</button>
+</nav>
+
+<!-- ============ 1. SNAPSHOT ============ -->
+<section class="ss-panel" id="ss-p1" role="tabpanel" aria-labelledby="ss-t1">
+  <div class="kpis">
+    <!-- One tile per metric, in this order: CMP, Market cap, 52W high / low, Face value, P/E (with badge), P/B, ROE, ROCE, D/E, Dividend yield.
+         Pattern: <div class="kpi"><div class="k">P/E</div><div class="v">28.4 <span class="sig risk">Expensive</span></div><div class="s">Screener</div></div>
+         Missing:  <div class="kpi"><div class="k">P/B</div><div class="v"><span class="na">🚩 Data unavailable — verify at Tickertape</span></div></div> -->
+    [KPI_ITEMS]
+  </div>
+  <p class="src">[HORIZON_NOTE]</p>
+
+  <h3>Business &amp; moat</h3>
+  <!-- 2–4 sentences: what it sells, to whom; pricing power, brand, switching costs, market share — with facts. -->
+  <p>[MOAT_SUMMARY]</p>
+
+  <div class="cols">
+    <div class="box"><h3>Sector tailwinds</h3><ul>
+      <!-- Pattern: <li>Point tied to a fact or policy</li> -->
+      [TAILWIND_ITEMS]
+    </ul></div>
+    <div class="box"><h3>Headwinds &amp; regulatory risks</h3><ul>
+      [HEADWIND_ITEMS]
+    </ul></div>
+  </div>
+</section>
+
+<!-- ============ 2. VALUATION ============ -->
+<section class="ss-panel" id="ss-p2" role="tabpanel" aria-labelledby="ss-t2">
+  <p class="src">P/E — price paid for ₹1 of yearly profit · P/B — price vs. the company's net worth · EV/EBITDA — value of the whole business (debt included) vs. its operating profit.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Metric</th><th>Current</th><th>Sector avg</th><th>Own 5-yr avg</th><th>Signal</th></tr></thead>
+    <tbody>
+      <!-- Rows: P/E, P/B, EV/EBITDA (lenders: P/B first, then P/E; drop EV/EBITDA).
+           Pattern: <tr><td>P/E</td><td>28.4</td><td>24.1</td><td>31.0</td><td><span class="sig neutral">Fair</span></td></tr> -->
+      [VALUATION_ROWS]
+    </tbody>
+  </table></div>
+  <p class="src">Sources: [VALUATION_SOURCES]</p>
+  <div class="read">[VALUATION_READ]</div>
+</section>
+
+<!-- ============ 3. GROWTH ============ -->
+<section class="ss-panel" id="ss-p3" role="tabpanel" aria-labelledby="ss-t3">
+  <h3>Compounded growth (CAGR — average yearly growth rate)</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Metric</th><th>3-yr CAGR</th><th>5-yr CAGR</th><th>Trend</th></tr></thead>
+    <tbody>
+      <!-- Rows: Revenue, Net profit, EPS.
+           Pattern: <tr><td>Revenue</td><td>11.2%</td><td>13.5%</td><td><span class="sig watch">Slowing</span></td></tr> -->
+      [CAGR_ROWS]
+    </tbody>
+  </table></div>
+
+  <h3>Margins — 5-year trend</h3>
+  <div class="tbl"><table>
+    <!-- Year headers, oldest to latest. Pattern: <th>FY22</th><th>FY23</th>… -->
+    <thead><tr><th>Margin</th>[MARGIN_YEAR_HEADERS]</tr></thead>
+    <tbody>
+      <!-- Rows: EBITDA margin, Net profit margin. Pattern: <tr><td>EBITDA margin</td><td>24.1%</td><td>25.0%</td>…</tr> -->
+      [MARGIN_ROWS]
+    </tbody>
+  </table></div>
+
+  <h3>EPS — last 8 quarters (YoY change)</h3>
+  <div class="bars">
+    <!-- Oldest to latest. Width = this EPS ÷ highest EPS in the set × 100 (use the absolute value and class "bf neg" for a loss).
+         Pattern: <div class="bar-row"><span class="bl">Q2 FY27</span><span class="bt"><span class="bf" style="width:86%"></span></span><span class="bv">₹32.10 <em class="up">+12%</em></span></div>
+         Falling YoY: <em class="down">−4%</em> -->
+    [EPS_BARS]
+  </div>
+  <p class="src">Sources: [GROWTH_SOURCES]</p>
+  <div class="read">[GROWTH_READ]</div>
+</section>
+
+<!-- ============ 4. HEALTH ============ -->
+<section class="ss-panel" id="ss-p4" role="tabpanel" aria-labelledby="ss-t4">
+  <div class="tbl"><table>
+    <thead><tr><th>Metric</th><th>Latest</th><th>5-yr trend</th><th>Signal</th></tr></thead>
+    <tbody>
+      <!-- Rows: Debt-to-equity, Interest coverage, Current ratio (lenders: GNPA %, NNPA %, CASA, Capital adequacy).
+           Pattern: <tr><td>Debt-to-equity</td><td>0.32</td><td>0.61 → 0.32</td><td><span class="sig good">Safe</span></td></tr> -->
+      [HEALTH_ROWS]
+    </tbody>
+  </table></div>
+
+  <h3>Free cash flow (cash left after running and investing in the business)</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Year</th><th>Operating cash flow</th><th>Capex</th><th>Free cash flow</th></tr></thead>
+    <tbody>
+      <!-- 3–5 years, oldest to latest, ₹ Cr. Pattern: <tr><td>FY26</td><td>4,210</td><td>1,180</td><td>3,030</td></tr> -->
+      [FCF_ROWS]
+    </tbody>
+  </table></div>
+  <p class="src">FCF signal: <span class="sig [FCF_SIGNAL_CLASS]">[FCF_SIGNAL]</span> · Sources: [HEALTH_SOURCES]</p>
+  <div class="read">[HEALTH_READ]</div>
+</section>
+
+<!-- ============ 5. RETURNS ============ -->
+<section class="ss-panel" id="ss-p5" role="tabpanel" aria-labelledby="ss-t5">
+  <p class="src">ROE — profit earned on shareholders' money · ROCE — profit earned on all capital employed, debt included.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Metric</th><th>Current</th><th>3-yr avg</th><th>5-yr avg</th><th>Signal</th></tr></thead>
+    <tbody>
+      <!-- Rows: ROE, ROCE (lenders: ROE, ROA, NIM).
+           Pattern: <tr><td>ROE</td><td>18.2%</td><td>17.5%</td><td>16.9%</td><td><span class="sig good">Good</span></td></tr> -->
+      [RETURNS_ROWS]
+    </tbody>
+  </table></div>
+
+  <h3>Dividends</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Year</th><th>Dividend / share</th><th>Payout ratio</th></tr></thead>
+    <tbody>
+      <!-- Last 3–5 years. Pattern: <tr><td>FY26</td><td>₹12.00</td><td>38%</td></tr> -->
+      [DIVIDEND_ROWS]
+    </tbody>
+  </table></div>
+  <p class="src">Sources: [RETURNS_SOURCES]</p>
+  <div class="read">[RETURNS_READ]</div>
+</section>
+
+<!-- ============ 6. PEERS ============ -->
+<section class="ss-panel" id="ss-p6" role="tabpanel" aria-labelledby="ss-t6">
+  <div class="tbl"><table>
+    <thead><tr><th>Company</th><th>P/E</th><th>P/B</th><th>ROE</th><th>Revenue growth (3-yr)</th><th>D/E</th></tr></thead>
+    <tbody>
+      <!-- This stock first with class "self", then its 3 closest peers.
+           Pattern: <tr class="self"><td>This Co (TICKER)</td><td>28.4</td><td>6.1</td><td>18.2%</td><td>11.2%</td><td>0.32</td></tr>
+                    <tr><td>Peer Co (TICKER)</td><td>…</td>…</tr> -->
+      [PEER_ROWS]
+    </tbody>
+  </table></div>
+  <p class="src">Sources: [PEERS_SOURCES]</p>
+  <div class="read">[PEERS_READ]</div>
+</section>
+
+<!-- ============ 7. OWNERSHIP ============ -->
+<section class="ss-panel" id="ss-p7" role="tabpanel" aria-labelledby="ss-t7">
+  <h3>Shareholding trend (%)</h3>
+  <div class="tbl"><table>
+    <!-- Quarter headers, oldest to latest, 8–12 quarters. Pattern: <th>Sep 24</th><th>Dec 24</th>… -->
+    <thead><tr><th>Holder</th>[SHP_QUARTER_HEADERS]</tr></thead>
+    <tbody>
+      <!-- Rows: Promoters, Pledged (% of promoter holding), FIIs, DIIs, Public.
+           Pattern: <tr><td>Promoters</td><td>72.3</td><td>72.3</td>…</tr> -->
+      [SHP_ROWS]
+    </tbody>
+  </table></div>
+  <!-- Pledge > 10%: "🚩 Promoters have pledged 14.2% of their holding (Moneycontrol) — …". Otherwise state the figure plainly. -->
+  <p>[PLEDGE_NOTE]</p>
+
+  <h3>Insider &amp; promoter activity — last 12 months</h3>
+  <ul>
+    <!-- SAST / insider-trading disclosures, bulk and block deals: who, buy or sell, how much, stated reason. Or "No insider or promoter trades disclosed in the last 12 months (Trendlyne)". Pattern: <li>…</li> -->
+    [INSIDER_ITEMS]
+  </ul>
+
+  <h3>Management &amp; governance</h3>
+  <ul>
+    <!-- Guidance vs delivery, capital allocation, any red flags (auditor exit, related-party issues, regulatory orders) — or "No governance flags found in recent filings/news". Pattern: <li>…</li> -->
+    [MGMT_ITEMS]
+  </ul>
+  <p class="src">Sources: [OWNERSHIP_SOURCES]</p>
+  <div class="read">[OWNERSHIP_READ]</div>
+</section>
+
+<!-- ============ 8. NEWS & MOOD ============ -->
+<section class="ss-panel" id="ss-p8" role="tabpanel" aria-labelledby="ss-t8">
+  <h3>What happened — company &amp; sector</h3>
+  <div class="tbl"><table class="wrap">
+    <thead><tr><th>What happened</th><th>When</th><th>Why it matters for a long-term holder</th><th>Source</th></tr></thead>
+    <tbody>
+      <!-- Events first (results, orders, capex, management/auditor changes, regulatory actions, credit-rating changes); opinions only lightly, never brokerage ratings or targets. "When" as a period: "Q2 FY27 results", "last month".
+           Pattern: <tr><td>Q2 revenue up 9% YoY; margin down 1.8 pts on input costs</td><td>Q2 FY27 results</td><td>Second straight quarter of margin pressure</td><td>Screener</td></tr> -->
+      [NEWS_ROWS]
+    </tbody>
+  </table></div>
+
+  <h3>Macro that touches this business</h3>
+  <ul>
+    <!-- Only macro relevant to this company, each with a sourced figure. Pattern: <li>Crude oil is the main input-cost driver; Brent at $X/bbl (source) vs $Y a year ago</li> -->
+    [MACRO_ITEMS]
+  </ul>
+
+  <h3>Market mood <span class="illus">· context, not a forecast</span></h3>
+  <div class="read">
+    <span class="sig [MOOD_CLASS]">[MOOD_BAND]</span> &nbsp;Confidence: <b>[MOOD_CONFIDENCE]</b>
+    <ul style="margin-top:8px">
+      <!-- 2–4 lines: dominant narrative · key divergence (e.g. "headlines upbeat, FIIs selling for four quarters") · data limits. Pattern: <li>…</li> -->
+      [MOOD_NOTES]
+    </ul>
+  </div>
+  <p class="src">Mood draws on news tone, FII/DII flows, insider activity and (lightly) investor forums. It never changes the fundamental-quality verdict. Sources: [NEWS_SOURCES]</p>
+</section>
+
+<!-- ============ 9. BULL VS BEAR ============ -->
+<section class="ss-panel" id="ss-p9" role="tabpanel" aria-labelledby="ss-t9">
+  <p class="src">Two researchers argue the strongest honest case each way, using only the figures in this report; a moderator then checks each disputed point against the data. No winner is declared and nothing here is a buy or sell call.</p>
+  <div class="cols">
+    <div class="box bull"><h3>Bull case</h3><ul>
+      <!-- 3 points: claim + number + source. Pattern: <li><b>Pricing power:</b> gross margin held at 42% through two years of input inflation (Screener)</li> -->
+      [BULL_ITEMS]
+    </ul></div>
+    <div class="box bear"><h3>Bear case</h3><ul>
+      [BEAR_ITEMS]
+    </ul></div>
+  </div>
+
+  <h3>Rebuttals</h3>
+  <!-- Each answers the other side's strongest point, specifically, in 2–3 lines. -->
+  <p><b>Bull replies:</b> [BULL_REBUTTAL]</p>
+  <p><b>Bear replies:</b> [BEAR_REBUTTAL]</p>
+
+  <h3>Moderator's scorecard</h3>
+  <div class="tbl"><table class="wrap">
+    <thead><tr><th>Point in dispute</th><th>Bull says</th><th>Bear says</th><th>What the data shows</th><th>Better supported</th></tr></thead>
+    <tbody>
+      <!-- 3–5 rows. Last cell is one of: <span class="side bull">Bull</span> · <span class="side bear">Bear</span> · <span class="side open">Unresolved</span>. Judge each point on evidence; no overall winner, no tally.
+           Pattern: <tr><td>Margins</td><td>Pressure is temporary</td><td>Structural competition</td><td>OPM down 4 of last 6 quarters; competitor capacity up 30%</td><td><span class="side bear">Bear</span></td></tr> -->
+      [SCORECARD_ROWS]
+    </tbody>
+  </table></div>
+
+  <h3>What would settle it</h3>
+  <ul>
+    <!-- 2–3 measurable checkpoints: metric, where it is now (period), what would shift the picture. Pattern: <li>EBITDA margin back above 20% (now 17.4%, Q2 FY27)</li> -->
+    [SETTLE_ITEMS]
+  </ul>
+</section>
+
+<!-- ============ 10. VIEW ============ -->
+<section class="ss-panel" id="ss-p10" role="tabpanel" aria-labelledby="ss-t10">
+  <div class="cols">
+    <div class="box"><h3>3 strengths</h3><ul>
+      <!-- Each tied to a number or fact. Pattern: <li>…</li> -->
+      [STRENGTH_ITEMS]
+    </ul></div>
+    <div class="box"><h3>2 watch-points</h3><ul>
+      [WATCH_ITEMS]
+    </ul></div>
+  </div>
+
+  <h3>Through three investor lenses</h3>
+  <p class="src">How the same facts read to different temperaments — which lens is yours is your call.</p>
+  <div class="cols lenses">
+    <div class="box"><h3>Growth-seeking</h3>
+      <p><b>Finds appealing:</b> [LENS_GROWTH_APPEAL]</p>
+      <p><b>Would worry about:</b> [LENS_GROWTH_WORRY]</p></div>
+    <div class="box"><h3>Balanced</h3>
+      <p><b>Finds appealing:</b> [LENS_BALANCED_APPEAL]</p>
+      <p><b>Would worry about:</b> [LENS_BALANCED_WORRY]</p></div>
+    <div class="box"><h3>Capital-preservation</h3>
+      <p><b>Finds appealing:</b> [LENS_SAFE_APPEAL]</p>
+      <p><b>Would worry about:</b> [LENS_SAFE_WORRY]</p></div>
+  </div>
+
+  <h3>Checkpoints for the next results</h3>
+  <div class="tbl"><table class="wrap">
+    <thead><tr><th>Checkpoint</th><th>Now</th><th>What would change the picture</th></tr></thead>
+    <tbody>
+      <!-- First row = the one thing that matters most, marked ★. 2–4 rows, measurable — a later Thesis Check is scored against these.
+           Pattern: <tr><td>★ EBITDA margin</td><td>17.4% (Q2 FY27)</td><td>Back above 20% would ease the margin worry; below 15% would deepen it</td></tr> -->
+      [CHECKPOINT_ROWS]
+    </tbody>
+  </table></div>
+
+  <h3>If past trends simply continued <span class="illus">· illustration, not a forecast</span></h3>
+  <!-- One or two sentences of arithmetic from a stated past trend, e.g. "If the 5-yr revenue CAGR of 13.5% held for 3 more years, revenue would be about ₹X Cr." No price, no target, no "will". -->
+  <p>[SCENARIO_TEXT]</p>
+
+  <div class="read">
+    <b>Overall fundamental quality:</b> <span class="sig [QUALITY_CLASS]">[QUALITY]</span><br>[QUALITY_REASON]
+  </div>
+  <p class="src"><b>Data confidence: [DATA_CONFIDENCE].</b> [CONFIDENCE_NOTE]</p>
+
+  <h3>Sources</h3>
+  <ul class="src">
+    <!-- Pattern: <li>Screener.in — price, ratios, P&amp;L, balance sheet, shareholding (consolidated)</li> -->
+    [SOURCE_ITEMS]
+  </ul>
+
+  <p class="disc">This is a view of the fundamentals for educational purposes — not investment advice and not a buy/sell/hold recommendation. Verify figures independently. The decision is yours.</p>
+</section>
+
+</div>
+
+<script>
+(function () {
+  var root = document.getElementById('ss-root');
+  if (!root) return;
+  var tabs = Array.prototype.slice.call(root.querySelectorAll('[role="tab"]'));
+  function show(tab) {
+    tabs.forEach(function (b) {
+      var on = b === tab;
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+      b.tabIndex = on ? 0 : -1;
+      var panel = document.getElementById(b.getAttribute('aria-controls'));
+      if (panel) panel.hidden = !on;
+    });
+  }
+  tabs.forEach(function (b, i) {
+    b.addEventListener('click', function () { show(b); });
+    b.addEventListener('keydown', function (e) {
+      var next = null;
+      if (e.key === 'ArrowRight') next = tabs[(i + 1) % tabs.length];
+      if (e.key === 'ArrowLeft') next = tabs[(i - 1 + tabs.length) % tabs.length];
+      if (next) { e.preventDefault(); show(next); next.focus(); }
+    });
+  });
+  show(tabs[0]);
+})();
+</script>
